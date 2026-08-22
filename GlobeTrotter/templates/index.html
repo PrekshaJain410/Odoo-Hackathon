@@ -1,0 +1,16 @@
+{% extends "base.html" %}{% block title %}GlobeTrotter | Travel Smarter{% endblock %}
+{% block content %}
+<section class="hero"><div class="container"><div class="row align-items-center">
+<div class="col-lg-7"><span class="badge badge-soft rounded-pill px-3 py-2">✈ YOUR NEXT ADVENTURE STARTS HERE</span>
+<h1 class="mt-4">Plan. Explore.<br><span>Travel the World.</span></h1>
+<p class="lead text-secondary my-4">Create personalized trips, organize multi-city itineraries, manage your budget and share your adventures with the GlobeTrotter community.</p>
+<a href="{{ url_for('create_trip') }}" class="btn btn-primary btn-lg rounded-pill px-4 me-2">Start Planning <i class="bi bi-arrow-right"></i></a>
+<a href="{{ url_for('search') }}" class="btn btn-outline-primary btn-lg rounded-pill px-4">Explore Cities</a></div>
+<div class="col-lg-5"><div class="hero-img"><i class="bi bi-airplane-engines"></i></div></div>
+</div></div></section>
+<section class="section"><div class="container text-center"><h2 class="section-title">Everything for your journey</h2><p class="section-subtitle mb-5">One platform to dream, design and organize your trip.</p>
+<div class="row g-4">
+{% for icon,title,text in [('bi-map','Plan Multi-City Trips','Add destinations, dates and stops in one place.'),('bi-wallet2','Control Your Budget','Track transport, stay, meals and activities.'),('bi-calendar-event','Visual Itinerary','See your complete trip day by day.'),('bi-people','Travel Community','Share itineraries and discover ideas from others.')] %}
+<div class="col-md-6 col-lg-3"><div class="feature-card text-start"><div class="icon-box mb-4"><i class="bi {{ icon }}"></i></div><h5>{{ title }}</h5><p class="text-secondary mb-0">{{ text }}</p></div></div>{% endfor %}
+</div></div></section>
+{% endblock %}

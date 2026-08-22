@@ -1,0 +1,7 @@
+{% extends "base.html" %}{% block content %}<section class="auth-wrap"><div class="container"><div class="auth-card" style="max-width:700px">
+<div class="text-center mb-4"><div class="avatar mx-auto mb-3"><i class="bi bi-camera"></i></div><h2 class="fw-bold">Create Your Account</h2><p class="text-secondary">Join GlobeTrotter and start exploring.</p></div>
+<form><div class="row g-3"><div class="col-md-6"><input class="form-control" placeholder="First Name"></div><div class="col-md-6"><input class="form-control" placeholder="Last Name"></div>
+<div class="col-md-6"><input type="email" class="form-control" placeholder="Email Address"></div><div class="col-md-6"><input class="form-control" placeholder="Phone Number"></div>
+<div class="col-md-6"><input class="form-control" placeholder="City"></div><div class="col-md-6"><input class="form-control" placeholder="Country"></div>
+<div class="col-12"><textarea class="form-control" rows="3" placeholder="Additional information..."></textarea></div>
+<div class="col-12"><a href="{{ url_for('dashboard') }}" class="btn btn-primary w-100 py-2 rounded-pill">Create Account</a></div></div></form></div></div></section>{% endblock %}
