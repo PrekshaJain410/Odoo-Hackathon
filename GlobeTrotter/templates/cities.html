@@ -1,0 +1,52 @@
+{% extends "base.html" %}{% block title %}City Search · GlobeTrotter{% endblock %}
+{% block content %}
+<main class="container py-5">
+    <div class="page-title">
+        <h1>City search</h1>
+        <p>Discover destinations using popularity, region and cost signals.</p>
+    </div>
+    <form class="toolbar mb-4" method="get">
+        <div class="flex-grow-1">
+            <input class="form-control" name="q" value="{{q}}" placeholder="Search city, country or region"></div>
+            <select class="form-select" name="group_by" onchange="this.form.submit()">
+                <option value="none" {% if group_by == 'none' %}selected{% endif %}>No grouping</option>
+                <option value="region" {% if group_by == 'region' %}selected{% endif %}>Group by region</option>
+                <option value="country" {% if group_by == 'country' %}selected{% endif %}>Group by country</option>
+            </select>
+            <select class="form-select" name="region" onchange="this.form.submit()">
+                <option value="all">All regions</option>
+                {% for item in regions %}
+                <option value="{{item}}" {% if region == item %}selected{% endif %}>{{item}}</option>
+                {% endfor %}
+            </select>
+            <select class="form-select" name="cost" onchange="this.form.submit()">
+                <option value="all" {% if cost == 'all' %}selected{% endif %}>All budgets</option>
+                <option value="low" {% if cost == 'low' %}selected{% endif %}>Low cost</option>
+                <option value="medium" {% if cost == 'medium' %}selected{% endif %}>Medium cost</option>
+                <option value="high" {% if cost == 'high' %}selected{% endif %}>High cost</option>
+            </select>
+            <select class="form-select" name="sort" onchange="this.form.submit()">
+                <option value="popularity_desc" {% if sort == 'popularity_desc' %}selected{% endif %}>Most popular</option>
+                <option value="name_asc" {% if sort == 'name_asc' %}selected{% endif %}>Name A–Z</option>
+                <option value="cost_asc" {% if sort == 'cost_asc' %}selected{% endif %}>Lowest cost</option>
+            </select><button class="btn btn-dark" type="submit">Apply</button>
+        </form>
+        <div>
+            {% for label,cities in city_groups %}{% if label %}
+            <h5 class="trip-group-title">{{label}}</h5>
+            {% endif %}{% for city in cities %}
+            <div class="result-card">
+                <div class="result-img" style="background-image:url('{{city.image_url}}')"></div>
+                <div class="flex-grow-1">
+                    <h5>{{city.name}}, {{city.country}}</h5>
+                    <p>{{city.region}} · Cost index {{city.cost_index|round(0)}} · Popularity {{city.popularity}}/100</p>
+                    <a href="{{url_for('main.activities',city_id=city.id)}}">Explore activities <i class="bi bi-arrow-right"></i></a>
+                </div><i class="bi bi-chevron-right"></i>
+            </div>
+            {% endfor %}
+            {% else %}
+            <div class="empty">No cities matched your search.</div>
+            {% endfor %}
+        </div>
+    </main>
+{% endblock %}
