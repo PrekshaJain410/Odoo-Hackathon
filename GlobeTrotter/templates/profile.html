@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block title %}Profile · GlobeTrotter{% endblock %}
+
+{% block content %}
+<main class="container py-5">
+  <div class="page-title">
+    <h1>User profile</h1>
+    <p>Manage your personal details, preferences and privacy.</p>
+  </div>
+
+  <div class="row g-4">
+    <div class="col-lg-4">
+      <div class="profile-panel text-center">
+        <div class="profile-avatar"><i class="bi bi-person"></i></div>
+        <h4>{{ current_user.name }}</h4>
+        <p>{{ current_user.email }}</p>
+        <span class="badge-soft">{{ current_user.language }}</span>
+      </div>
+    </div>
+    <div class="col-lg-8">
+      <div class="panel p-4">
+        <h4>User details</h4>
+        <form method="post">
+          {{ csrf_field() }}
+          <label>Name</label>
+          <input class="form-control mb-3" name="name" value="{{ current_user.name }}" required>
+          <label>Email</label>
+          <input class="form-control mb-3" value="{{ current_user.email }}" disabled>
+          <label>Language</label>
+          <select class="form-select mb-3" name="language">
+            <option {% if current_user.language == 'English' %}selected{% endif %}>English</option>
+            <option {% if current_user.language == 'Gujarati' %}selected{% endif %}>Gujarati</option>
+            <option {% if current_user.language == 'Hindi' %}selected{% endif %}>Hindi</option>
+          </select>
+          <label>Bio</label>
+          <textarea class="form-control" name="bio" maxlength="500" rows="4">{{ current_user.bio or '' }}</textarea>
+          <button class="btn btn-brand rounded-pill px-4 mt-3">Save changes</button>
+        </form>
+      </div>
+    </div>
+    <div class="col-lg-8 ms-lg-auto">
+      <section class="panel danger-zone p-4">
+        <div class="danger-zone-heading">
+          <span class="danger-zone-icon"><i class="bi bi-exclamation-triangle"></i></span>
+          <div><h5>Delete account</h5><p>Deleting your account permanently removes your profile and all trips.</p></div>
+        </div>
+        <form method="post" action="{{ url_for('main.delete_account') }}" class="delete-account-form" onsubmit="return confirm('Delete your account permanently? This cannot be undone.');">
+          {{ csrf_field() }}
+          <label for="delete-confirm">Type <strong>DELETE</strong> to confirm</label>
+          <div class="delete-account-controls">
+            <input id="delete-confirm" class="form-control" name="confirm" placeholder="DELETE" autocomplete="off" required>
+            <button class="btn btn-danger rounded-pill" type="submit"><i class="bi bi-trash3"></i> Delete account</button>
+          </div>
+        </form>
+      </section>
+    </div>
+  </div>
+</main>
+{% endblock %}
