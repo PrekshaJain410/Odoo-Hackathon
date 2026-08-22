@@ -1,0 +1,285 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Analytics · GlobeTrotter{% endblock %}
+
+{% block content %}
+<main class="container py-5">
+    <div class="page-title">
+        <span class="eyebrow">SCREEN 12</span>
+        <h1>Admin analytics</h1>
+        <p>Monitor platform adoption, destinations and public travel plans.</p>
+    </div>
+
+    <!-- Stats Grid -->
+    <div class="row g-3 mb-4">
+        <div class="col-6 col-lg-3">
+            <div class="stat">
+                <span>Total Users</span>
+                <b>{{ stats.users }}</b>
+                <i class="bi bi-people"></i>
+            </div>
+        </div>
+        <div class="col-6 col-lg-3">
+            <div class="stat">
+                <span>Total Trips</span>
+                <b>{{ stats.trips }}</b>
+                <i class="bi bi-map"></i>
+            </div>
+        </div>
+        <div class="col-6 col-lg-3">
+            <div class="stat">
+                <span>Public Trips</span>
+                <b>{{ stats.public_trips }}</b>
+                <i class="bi bi-globe"></i>
+            </div>
+        </div>
+        <div class="col-6 col-lg-3">
+            <div class="stat">
+                <span>Avg Trips/User</span>
+                <b>{{ stats.avg_trips_per_user }}</b>
+                <i class="bi bi-graph-up"></i>
+            </div>
+        </div>
+        <div class="col-6 col-lg-3">
+            <div class="stat">
+                <span>Active Users</span>
+                <b>{{ stats.users_with_trips }}</b>
+                <i class="bi bi-person-check"></i>
+            </div>
+        </div>
+        <div class="col-6 col-lg-3">
+            <div class="stat">
+                <span>New This Month</span>
+                <b>{{ stats.new_users_this_month }}</b>
+                <i class="bi bi-person-plus"></i>
+            </div>
+        </div>
+        <div class="col-6 col-lg-3">
+            <div class="stat">
+                <span>Total Expenses</span>
+                <b>₹{{ '{:,.0f}'.format(stats.total_expenses) }}</b>
+                <i class="bi bi-wallet2"></i>
+            </div>
+        </div>
+        <div class="col-6 col-lg-3">
+            <div class="stat">
+                <span>Activities</span>
+                <b>{{ stats.activities }}</b>
+                <i class="bi bi-star"></i>
+            </div>
+        </div>
+    </div>
+
+    <!-- Trip Status -->
+    <div class="row g-3 mb-4">
+        <div class="col-6 col-lg-4">
+            <div class="stat stat-small">
+                <span>Upcoming Trips</span>
+                <b>{{ stats.upcoming_trips }}</b>
+                <i class="bi bi-clock"></i>
+            </div>
+        </div>
+        <div class="col-6 col-lg-4">
+            <div class="stat stat-small">
+                <span>Ongoing Trips</span>
+                <b>{{ stats.ongoing_trips }}</b>
+                <i class="bi bi-play-circle"></i>
+            </div>
+        </div>
+        <div class="col-6 col-lg-4">
+            <div class="stat stat-small">
+                <span>Completed Trips</span>
+                <b>{{ stats.completed_trips }}</b>
+                <i class="bi bi-check-circle"></i>
+            </div>
+        </div>
+    </div>
+
+    <!-- Full width row for all content -->
+    <div class="row g-4">
+        <!-- Top Users - Full width -->
+        <div class="col-12">
+            <div class="panel p-4 mb-4">
+                <h5>Top Contributors</h5>
+                <div class="table-responsive">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>Rank</th>
+                                <th>User</th>
+                                <th>Email</th>
+                                <th>Trips</th>
+                                <th>Joined</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for user in top_users %}
+                            <tr>
+                                <td><span class="rank-badge">{{ loop.index }}</span></td>
+                                <td><strong>{{ user.name }}</strong></td>
+                                <td>{{ user.email }}</td>
+                                <td><span class="badge-soft">{{ user.trip_count }}</span></td>
+                                <td>{{ user.created_at.strftime('%b %d, %Y') }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Two column layout for Monthly Signups + Activity Categories -->
+    <div class="row g-4">
+        <!-- Monthly Signups -->
+        <div class="col-lg-6">
+            <div class="panel p-4">
+                <h5>Monthly Signups</h5>
+                <div class="signup-chart">
+                    {% for item in monthly_signups %}
+                    <div class="chart-bar">
+                        <div class="bar" style="height: {{ (item.count / (monthly_signups|map(attribute='count')|max or 1) * 100)|round|int }}%"></div>
+                        <span>{{ item.month }}</span>
+                        <small>{{ item.count }}</small>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Activity Categories - Expanded to fill space -->
+        <div class="col-lg-6">
+            <div class="panel p-4" style="height: 100%;">
+                <h5>Activity Categories</h5>
+                <div class="category-grid expanded">
+                    {% for cat, count in category_counts %}
+                    <div class="category-item">
+                        <span>{{ cat or 'Uncategorized' }}</span>
+                        <span class="badge-soft">{{ count }}</span>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Popular Destinations - Full width -->
+    <div class="row g-4 mt-2">
+        <div class="col-12">
+            <div class="panel p-4">
+                <h5>Popular Destinations</h5>
+                <div class="row g-3">
+                    {% for city in top_cities %}
+                    <div class="col-md-6 col-lg-4">
+                        <div class="admin-row">
+                            <span>{{ city.name }}, {{ city.country }}</span>
+                            <div class="mini-progress">
+                                <i style="width: {{ (city.stop_count / (top_cities[0].stop_count or 1) * 100)|round|int }}%"></i>
+                            </div>
+                            <b>{{ city.stop_count }}</b>
+                        </div>
+                    </div>
+                    {% else %}
+                    <div class="col-12">
+                        <p class="text-secondary">No destinations yet.</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- User List Section -->
+    <div class="panel p-4 mt-4">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-3">
+            <h5>User Management</h5>
+            <div class="d-flex gap-2 flex-wrap">
+                <form method="get" class="d-flex gap-2 flex-wrap">
+                    <select name="user_filter" class="form-select form-select-sm" onchange="this.form.submit()">
+                        <option value="all" {% if user_filter == 'all' %}selected{% endif %}>All Users</option>
+                        <option value="active" {% if user_filter == 'active' %}selected{% endif %}>Active (has trips)</option>
+                        <option value="inactive" {% if user_filter == 'inactive' %}selected{% endif %}>Inactive (no trips)</option>
+                    </select>
+                    <select name="sort_by" class="form-select form-select-sm" onchange="this.form.submit()">
+                        <option value="created_desc" {% if sort_by == 'created_desc' %}selected{% endif %}>Newest First</option>
+                        <option value="created_asc" {% if sort_by == 'created_asc' %}selected{% endif %}>Oldest First</option>
+                        <option value="name_asc" {% if sort_by == 'name_asc' %}selected{% endif %}>Name A-Z</option>
+                        <option value="name_desc" {% if sort_by == 'name_desc' %}selected{% endif %}>Name Z-A</option>
+                        <option value="trips_desc" {% if sort_by == 'trips_desc' %}selected{% endif %}>Most Trips</option>
+                    </select>
+                    <button type="submit" class="btn btn-sm btn-dark">Apply</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="table-responsive">
+            <table class="admin-table user-table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Trips</th>
+                        <th>Joined</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in users %}
+                    <tr>
+                        <td>{{ loop.index + (users_pagination.page - 1) * users_pagination.per_page }}</td>
+                        <td><strong>{{ user.name }}</strong></td>
+                        <td>{{ user.email }}</td>
+                        <td><span class="badge-soft">{{ user_trip_counts.get(user.id, 0) }}</span></td>
+                        <td>{{ user.created_at.strftime('%b %d, %Y') }}</td>
+                        <td>
+                            {% if user_trip_counts.get(user.id, 0) > 0 %}
+                            <span class="badge-soft success">Active</span>
+                            {% else %}
+                            <span class="badge-soft muted">Inactive</span>
+                            {% endif %}
+                            {% if user.is_admin %}
+                            <span class="badge-soft admin">Admin</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a href="#" class="btn btn-sm btn-outline-primary rounded-pill" title="View user trips">
+                                <i class="bi bi-eye"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="7" class="text-center text-secondary py-4">No users found.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination -->
+        {% if users_pagination.pages > 1 %}
+        <nav class="mt-3">
+            <ul class="pagination justify-content-center">
+                <li class="page-item {% if not users_pagination.has_prev %}disabled{% endif %}">
+                    <a class="page-link" href="{{ url_for('admin.dashboard', page=users_pagination.prev_num, user_filter=user_filter, sort_by=sort_by) if users_pagination.has_prev else '#' }}">Previous</a>
+                </li>
+                {% for page_num in users_pagination.iter_pages(left_edge=2, right_edge=2, left_current=1, right_current=2) %}
+                    {% if page_num %}
+                    <li class="page-item {% if page_num == users_pagination.page %}active{% endif %}">
+                        <a class="page-link" href="{{ url_for('admin.dashboard', page=page_num, user_filter=user_filter, sort_by=sort_by) }}">{{ page_num }}</a>
+                    </li>
+                    {% else %}
+                    <li class="page-item disabled"><span class="page-link">…</span></li>
+                    {% endif %}
+                {% endfor %}
+                <li class="page-item {% if not users_pagination.has_next %}disabled{% endif %}">
+                    <a class="page-link" href="{{ url_for('admin.dashboard', page=users_pagination.next_num, user_filter=user_filter, sort_by=sort_by) if users_pagination.has_next else '#' }}">Next</a>
+                </li>
+            </ul>
+        </nav>
+        {% endif %}
+    </div>
+</main>
+{% endblock %}
